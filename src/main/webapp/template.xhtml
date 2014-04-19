@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="${request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="${request.contextPath}/resources/css/customization.css" rel="stylesheet" type="text/css" />
+        <script src="${request.contextPath}/resources/js/jquery-1.9.0.min.js" type="text/javascript"></script>
+        <script src="${request.contextPath}/resources/js/bootstrap.min.js" type="text/javascript"></script>
+        <title>Библиотека — EJB+JSF</title>
+    </h:head>
+
+    <h:body>
+        <!--
+        Интерфейс пользователя.
+        -->
+        <div align="center">
+            <div id="bodyfield" align="left">
+                <div class="clearfix" style="margin: 0 0 20px -10px;">
+                    <div class="btn-group">
+                        <span class="btn btn-xs btn-default disabled">приложение EJB+JSF</span>
+                        <a href="http://library.jelasticloud.com" class="btn btn-xs btn-default">вернуться к Spring-реализации</a>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a id="details" class="btn btn-danger">Как это работает?</a>
+                    </div>
+                </div>
+                <table width="100%">
+                    <tr>
+                        <td width="40%"><h2>Авторы:</h2></td>
+                        <td width="60%"><h2>Книги:</h2></td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <ui:insert name="authors">authors</ui:insert>
+                        </td>
+                        <td valign="top">
+                            <ui:insert name="books">books</ui:insert>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="verticalSpace">
+                            <h:form id="authorsControl">
+                                <input type="button" id="btnAddAuthor" value="добавить автора" class="btn btn-sm btn-default" />&nbsp;
+                                <h:commandButton value="удалить автора" rendered="#{selectionController.selectedAuthorId != 0}" styleClass="btn btn-sm btn-danger">
+                                    <f:ajax execute="@form" render=":authorsList :authorsControl :booksList :booksControl :addBook:authorSelect :errors" listener="#{authorsController.removeAuthor}"/>
+                                </h:commandButton>
+                            </h:form>
+                        </td>
+                        <td class="verticalSpace">
+                            <h:form id="booksControl">
+                                <h:commandButton value="показать все книги" styleClass="btn btn-sm btn-primary btn-pad-right" rendered="#{selectionController.selectedAuthorId != 0}">
+                                    <f:ajax execute="@form" render="@form :authorsList :authorsControl :booksList :errors" listener="#{selectionController.clearAuthorSelected}"/>
+                                </h:commandButton>
+                                <input type="button" id="btnAddBook" value="добавить книгу" class="btn btn-sm btn-default btn-pad-right" />
+                                <h:commandButton value="удалить книгу" rendered="#{selectionController.selectedBookId != 0}" styleClass="btn btn-sm btn-danger">
+                                    <f:ajax execute="@form" render="@form :booksList :errors" listener="#{booksController.removeBook}"/>
+                                </h:commandButton>
+                            </h:form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" colspan="2">
+                            <h:panelGroup id="errors" layout="block" styleClass="bs-callout bs-callout-danger">
+                                #{errorController.error}
+                            </h:panelGroup>
+                        </td>
+                    </tr>
+                </table>
+                <div class="footer">
+                    <ul class="list-inline">
+                        <li><a href="https://github.com/aleksej-lukyanets/library">исходные коды на github</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        Окна добавления авторов и книг.
+        -->
+        <div id="addAuthorModal" class="modal bs-example-modal-sm modal-bottom-fixed" tabindex="-1" role="dialog" aria-labelledby="detailsModal" aria-hidden="true">
+            <div class="modal-dialog modal-sm" style="line-height:160%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4>Добавление автора</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ui:insert name="addAuthor">addAuthor</ui:insert>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="addBookModal" class="modal bs-example-modal-sm modal-bottom-fixed" tabindex="-1" role="dialog" aria-labelledby="detailsModal" aria-hidden="true">
+            <div class="modal-dialog modal-sm" style="line-height:160%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4>Добавление книги</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ui:insert name="addBook">addBook</ui:insert>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $('body').delegate('#btnAddAuthor', 'click', function() {
+                $('#addAuthorModal').modal({show: true});
+            });
+            $('body').delegate('#btnAddBook', 'click', function() {
+                $('#addBookModal').modal({show: true});
+            });
+            
+        </script>
+
+        <!--
+        Окно "Как всё работает?"
+        -->
+        <div id="detailsModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="detailsModal" aria-hidden="true">
+            <div class="modal-dialog" style="line-height:160%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4>Добро пожаловать в веб-библиотеку (JSF)</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Библиотека на основе Enterprise JavaBeans и JavaServer Faces,
+                            так же как на Spring MVC, позволяет хранить, просматривать,
+                            изменять списки авторов и книг в базе данных.</p>
+                        <p>Для асинхронного обращения к серверу в этой реализации применён встроенный в JSF
+                            AJAX-компонент <code>f:ajax</code>. По этой причине отличается стратегия обновления
+                            пользовательского интерфейса: в ответ на действие пользователя у сервера
+                            запрашиваются изменившиеся элемента данных — вместо изменения элементов интерфейса
+                            средствами JavaScript, как это было в случае приложения на Spring. Соответственно,
+                            функции JavaScript здесь невелики и немногочисленны.</p>
+
+                        <h4 class="modal-title">Технологии</h4>
+
+                        <ul class="discharged">
+                            <li>сервлет: EJB 3, JSF 2.2;</li>
+                            <li>доступ к данным: JPA, Hibernate;</li>
+                            <li>веб-сервис: JAX-RS, RESTEasy;</li>
+                            <li>веб-интерфейс: jQuery, Bootstrap;</li>
+                            <li>база данных: PostgreSQL;</li>
+                            <li>серверы приложений: JBoss, GlassFish.</li>
+                        </ul>
+
+                        <h4 class="modal-title">Веб-сервис REST</h4>
+
+                        <p>Веб-сервис реализован средствами Java API for RESTful Web Services (JAX-RS),
+                            он позволяет запрашивать и изменять предоставленные приложением ресурсы
+                            в форматах JSON и XML. Веб-сервис доступен в дирректории <code>/ws/</code>,
+                            адреса ресурсов и ответы в целом аналогичны Spring-реализации.</p>
+                        <p>Пример добавления автора запросом к ресурсу: <code>POST /ws/authors</code> в формате XML:</p>
+                        <pre style="width: 60%;">заголовок:   Content-Type: application/xml<br/>             Accept: application/xml<br/>тело:        &lt;author&gt;<br/>                 &lt;id&gt;0&lt;/id&gt;<br/>                 &lt;country&gt;Россия&lt;/country&gt;<br/>                 &lt;name&gt;Лев Толстой&lt;/name&gt;<br/>             &lt;/author&gt;</pre>
+                        <p>Ответ приложения:</p>
+                        <pre style="width: 100%;">заголовок:   Status Code: 201 Created<br/>             Content-Type: application/xml<br/>             Location: http://library.jelasticloud.com/library/ws/authors/11<br/>тело:        &lt;author&gt;<br/>                 &lt;id&gt;11&lt;/id&gt;<br/>                 &lt;country&gt;Россия&lt;/country&gt;<br/>                 &lt;name&gt;Лев Толстой&lt;/name&gt;<br/>             &lt;/author&gt;</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $('body').delegate('#details', 'click', function() {
+                $('#detailsModal').modal({show: true});
+            });
+        </script>
+    </h:body>
+</html>
