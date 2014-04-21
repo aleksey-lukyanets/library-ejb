@@ -62,6 +62,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public Book remove(long bookId) {
         Book book = getById(bookId);
+        em.remove(book);
         return book;
     }
 }

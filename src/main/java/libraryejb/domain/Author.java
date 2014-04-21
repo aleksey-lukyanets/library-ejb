@@ -35,7 +35,7 @@ public class Author implements java.io.Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,
             targetEntity = Book.class, mappedBy = "author")
-    private final List<Book> books = new ArrayList<>(0);
+    private List<Book> books = new ArrayList<>(0);
 
     public Author() {
     }
@@ -67,5 +67,13 @@ public class Author implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
     }
 }
