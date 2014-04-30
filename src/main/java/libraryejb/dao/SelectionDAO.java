@@ -1,13 +1,12 @@
 package libraryejb.dao;
 
 import javax.ejb.Local;
-import javax.ejb.Remote;
 import libraryejb.domain.Selection;
 
 /**
  *
  */
-@Remote
+@Local
 public interface SelectionDAO {
 
     Selection get();
