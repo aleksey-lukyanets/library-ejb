@@ -17,7 +17,6 @@ import libraryejb.service.CountryService;
  */
 @Path("/countries")
 @Stateless
-@LocalBean
 public class CountryRest {
 
     @EJB

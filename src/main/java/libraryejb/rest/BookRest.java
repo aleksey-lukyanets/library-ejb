@@ -28,7 +28,6 @@ import libraryejb.service.BookService;
  */
 @Path("/books")
 @Stateless
-@LocalBean
 public class BookRest {
 
     @EJB

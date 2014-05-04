@@ -36,7 +36,6 @@ import libraryejb.service.BookService;
  */
 @Path("/authors")
 @Stateless
-@LocalBean
 public class AuthorRest {
 
     @EJB
