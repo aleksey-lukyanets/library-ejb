@@ -1,13 +1,13 @@
 package libraryejb.dao;
 
 import java.util.List;
-import javax.ejb.Remote;
+import javax.ejb.Local;
 import libraryejb.domain.Author;
 
 /**
  * ДАО автора.
  */
-@Remote
+@Local
 public interface AuthorDAO {
 
     List<Author> getAll();

@@ -1,26 +1,26 @@
 package libraryejb.dao.impl;
 
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import libraryejb.dao.BookDAO;
+import libraryejb.domain.Author;
+import libraryejb.domain.Book;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.HibernateEntityManager;
-import libraryejb.dao.BookDAO;
-import libraryejb.domain.Author;
-import libraryejb.domain.Book;
 
 /**
  * Реализация ДАО книги.
  */
-@Stateless
 public class BookDAOImpl implements BookDAO {
 
     @PersistenceContext(unitName = "library")
     private EntityManager em;
+
+    //------------------------------------------------------------------ Чтение
 
     @Override
     public List<Book> getAll() {
@@ -52,6 +52,8 @@ public class BookDAOImpl implements BookDAO {
         query.setParameter("title", title);
         return (Book) query.uniqueResult();
     }
+
+    //--------------------------------------------------------------- Изменение
 
     @Override
     public Book insert(Book book) {

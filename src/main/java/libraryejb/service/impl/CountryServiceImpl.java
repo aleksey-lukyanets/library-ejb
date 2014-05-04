@@ -1,8 +1,8 @@
 package libraryejb.service.impl;
 
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import libraryejb.dao.CountryDAO;
 import libraryejb.domain.Country;
 import libraryejb.exception.UnknownCountryException;
@@ -11,7 +11,7 @@ import libraryejb.service.CountryService;
 @Stateless
 public class CountryServiceImpl implements CountryService {
 
-    @EJB
+    @Inject
     private CountryDAO countryDAO;
 
     @Override

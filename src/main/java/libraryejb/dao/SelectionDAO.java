@@ -7,7 +7,7 @@ import libraryejb.domain.Selection;
 /**
  *
  */
-@Remote
+@Local
 public interface SelectionDAO {
 
     Selection get();
