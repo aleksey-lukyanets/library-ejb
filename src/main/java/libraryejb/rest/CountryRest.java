@@ -13,22 +13,32 @@ import libraryejb.exception.UnknownCountryException;
 import libraryejb.service.CountryService;
 
 /**
- *
+ * REST веб-сервис стран.
  */
 @Path("/countries")
 @Stateless
 @LocalBean
-public class CountryWS {
+public class CountryRest {
 
     @EJB
     private CountryService countryService;
+    
+    //------------------------------------------------------------------ Чтение
 
+    /**
+     * @return перечень всех стран
+     */
     @GET
     @Path("/")
     public Collection<Country> getCountries() {
         return countryService.getAll();
     }
     
+    /**
+     * Получение одной страны.
+     * @param id идентификатор страны
+     * @return объект страны
+     */
     @GET
     @Path("/{id}")
     public Response getCountry(@PathParam("id") int id) {

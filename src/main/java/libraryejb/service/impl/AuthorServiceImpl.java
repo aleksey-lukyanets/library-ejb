@@ -5,6 +5,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import libraryejb.dao.AuthorDAO;
 import libraryejb.domain.Author;
 import libraryejb.domain.Country;
@@ -20,9 +21,9 @@ import libraryejb.service.CountryService;
 public class AuthorServiceImpl implements AuthorService {
 
     @EJB
-    private AuthorDAO authorDAO;
-    @EJB
     private CountryService countryService;
+    @Inject
+    private AuthorDAO authorDAO;
 
     //------------------------------------------------------------------ Чтение
     
@@ -55,12 +56,23 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Author insert(AuthorDTO dto) throws DuplicateException, UnknownCountryException, ValidationException {
         String name = dto.getName();
-        if (name.isEmpty()) {
+        Country country = countryService.getByTitle(dto.getCountry());
+        return createAuthor(name, country);
+    }
+    
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @Override
+    public Author insert(long countryId, String name) throws DuplicateException, UnknownCountryException, ValidationException {
+        Country country = countryService.getById(countryId);
+        return createAuthor(name, country);
+    }
+
+    private Author createAuthor(String authorName, Country country) throws DuplicateException, ValidationException {
+        if (authorName.isEmpty()) {
             throw new ValidationException("Имя автора не может быть пустым");
         }
-        checkDuplicated(name);
-        Country country = countryService.getByTitle(dto.getCountry());
-        Author author = new Author(country, name);
+        checkDuplicated(authorName);
+        Author author = new Author(country, authorName);
         return authorDAO.insert(author);
     }
     

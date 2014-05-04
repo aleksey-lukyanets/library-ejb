@@ -1,19 +1,19 @@
 package libraryejb.controller;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import java.io.Serializable;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import libraryejb.service.SelectionService;
 
 /**
- * 
+ * Контроллер состояния списков.
+ * Хранит в сессии индентификаторы выбранных в текущий момент автора и книги.
  */
-@Named("selectionController")
-@Stateless
-public class SelectionController {
+@Named
+@SessionScoped
+public class SelectionController implements Serializable {
     
-    @EJB
-    private SelectionService selectionService;
+    private long selectedAuthorId = 0;
+    private long selectedBookId = 0;
     
     public void clearAuthorSelected() {
         setSelectedAuthorId(0);
@@ -27,19 +27,19 @@ public class SelectionController {
     //-------------------------------------------- Аксессоры/мутаторы для полей
     
     public long getSelectedAuthorId() {
-        return selectionService.get().getAuthorId();
+        return selectedAuthorId;
     }
 
     public void setSelectedAuthorId(long selectedAuthorId) {
-        selectionService.updateAuthor(selectedAuthorId);
+        this.selectedAuthorId = selectedAuthorId;
         clearBookSelected();
     }
 
     public long getSelectedBookId() {
-        return selectionService.get().getBookId();
+        return selectedBookId;
     }
 
     public void setSelectedBookId(long selectedBookId) {
-        selectionService.updateBook(selectedBookId);
+        this.selectedBookId = selectedBookId;
     }
 }

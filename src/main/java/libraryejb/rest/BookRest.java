@@ -24,16 +24,21 @@ import libraryejb.exception.ValidationException;
 import libraryejb.service.BookService;
 
 /**
- *
+ * REST веб-сервис книг.
  */
 @Path("/books")
 @Stateless
 @LocalBean
-public class BookWS {
+public class BookRest {
 
     @EJB
     private BookService bookService;
+    
+    //------------------------------------------------------------------ Чтение
 
+    /**
+     * @return перечень всех книг
+     */
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -49,6 +54,11 @@ public class BookWS {
         return dtos;
     }
     
+    /**
+     * Получение одной книги.
+     * @param id идентификатор книги
+     * @return объект книги
+     */
     @GET
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -64,6 +74,13 @@ public class BookWS {
         return response.build();
     }
     
+    //--------------------------------------------------------------- Изменение
+    
+    /**
+     * Добавление новой книги.
+     * @param book данные о новой книге
+     * @return добавленная книга
+     */
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -81,6 +98,11 @@ public class BookWS {
         return response.build();
     }
     
+    /**
+     * Удаление книги.
+     * @param id идентификатор книги
+     * @return удалённая книга
+     */
     @DELETE
     @Path("/{id}")
     public Response deleteBook(@PathParam("id") long id) {

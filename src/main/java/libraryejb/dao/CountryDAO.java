@@ -10,8 +10,6 @@ import libraryejb.domain.Country;
 @Local
 public interface CountryDAO {
 
-    void insert(Country country);
-
     Country getById(long countryId);
 
     Country getByTitle(String title);

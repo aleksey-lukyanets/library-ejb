@@ -3,75 +3,90 @@ package libraryejb.controller;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import libraryejb.domain.Author;
 import libraryejb.domain.Book;
-import libraryejb.domain.dto.BookDTO;
 import libraryejb.exception.AuthorNotFoundException;
 import libraryejb.exception.BookNotFoundException;
 import libraryejb.exception.DuplicateException;
 import libraryejb.exception.ValidationException;
-import libraryejb.service.AuthorService;
 import libraryejb.service.BookService;
 
 /**
  * Контроллер книг.
  */
-@Named("booksController")
-@Stateless
+@Named
+@RequestScoped
 public class BooksController {
     
     @EJB
     private BookService bookService;
-    @EJB
-    private AuthorService authorService;
+    
     @Inject
     private SelectionController selectionController;
+    
     @Inject
     private ErrorController errorController;
     
     private long bookAuthorId = 0;
     private String newBookTitle = "";
     
-    //---------------------------------------------- Методы добавления/удаления
+    //-------------------------------------------------------------------------
     
+    /**
+     * Возвращает перечень книг.
+     * Если автор выбран, возвращает книги этого автора, иначе - все имеющиеся книги.
+     * @return перечень книг
+     */
     public List<Book> getBooksList() {
         long selectedAuthorId = selectionController.getSelectedAuthorId();
-        if (selectedAuthorId != 0) {
-            try {
-                return bookService.getByAuthor(selectedAuthorId);
-            } catch (AuthorNotFoundException ex) {
-                errorController.setError(ex.getMessage());
-                return new ArrayList();
-            }
+        
+        // Если автор не выбран - вернуть перечень всех существующих книг
+        if (selectedAuthorId == 0) {
+            return bookService.getAll();
         }
-        return bookService.getAll();
+        // Вернуть перечень книг выбранного автора
+        try {
+            return bookService.getByAuthor(selectedAuthorId);
+        } catch (AuthorNotFoundException ex) {
+            errorController.setError(ex.getMessage());
+            return new ArrayList();
+        }
     }
     
+    /**
+     * Добавление новой книги.
+     */
     public void addBook() {
         try {
-            Author author = authorService.getById(bookAuthorId);
-            Book book = new Book(author, newBookTitle);
-            bookService.insert(new BookDTO(book));
-            selectionController.clearBookSelected();
-            errorController.clearError();
+            bookService.insert(bookAuthorId, newBookTitle);
+            refreshSelectionState();
         } catch (AuthorNotFoundException | DuplicateException | ValidationException ex) {
             errorController.setError(ex.getMessage());
         }
     }
+
+    private void refreshSelectionState() {
+        selectionController.clearBookSelected();
+        errorController.clearError();
+    }
     
+    /**
+     * Удаление выбранной книги.
+     */
     public void removeBook() {
-        long selectedBook = selectionController.getSelectedBookId();
-        if (selectedBook != 0) {
-            try {
-                bookService.remove(selectedBook);
-                selectionController.clearBookSelected();
-                errorController.clearError();
-            } catch (BookNotFoundException ex) {
-                errorController.setError(ex.getMessage());
-            }
+        long selectedBookId = selectionController.getSelectedBookId();
+        // Если ни один автор не выбран
+        if (selectedBookId == 0) {
+            return;
+        }
+        // Удаление книги
+        try {
+            bookService.remove(selectedBookId);
+            refreshSelectionState();
+        } catch (BookNotFoundException ex) {
+            errorController.setError(ex.getMessage());
         }
     }
     

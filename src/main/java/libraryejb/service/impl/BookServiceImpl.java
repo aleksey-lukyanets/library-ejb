@@ -5,6 +5,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import libraryejb.dao.BookDAO;
 import libraryejb.domain.Author;
 import libraryejb.domain.Book;
@@ -20,9 +21,9 @@ import libraryejb.service.BookService;
 public class BookServiceImpl implements BookService {
 
     @EJB
-    private BookDAO bookDAO;
-    @EJB
     private AuthorService authorService;
+    @Inject
+    private BookDAO bookDAO;
 
     //------------------------------------------------------------------ Чтение
 
@@ -61,10 +62,21 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book insert(BookDTO dto) throws DuplicateException, AuthorNotFoundException, ValidationException {
         String title = dto.getTitle();
+        Author author = authorService.getByName(dto.getAuthor());
+        return createBook(title, author);
+    }
+    
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @Override
+    public Book insert(long authorId, String title) throws DuplicateException, AuthorNotFoundException, ValidationException {
+        Author author = authorService.getById(authorId);
+        return createBook(title, author);
+    }
+
+    private Book createBook(String title, Author author) throws DuplicateException, ValidationException {
         if (title.isEmpty()) {
             throw new ValidationException("Название книги не может быть пустым");
         }
-        Author author = authorService.getByName(dto.getAuthor());
         checkIfBookDuplicates(title, author);
         Book book = new Book(author, title);
         return bookDAO.insert(book);

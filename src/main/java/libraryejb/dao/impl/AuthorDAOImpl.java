@@ -1,28 +1,27 @@
 package libraryejb.dao.impl;
 
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import libraryejb.dao.AuthorDAO;
+import libraryejb.domain.Author;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.ejb.HibernateEntityManager;
-import libraryejb.dao.AuthorDAO;
-import libraryejb.domain.Author;
 
 /**
  * Реализация ДАО автора.
  */
-@Stateless
 public class AuthorDAOImpl implements AuthorDAO {
 
     @PersistenceContext(unitName = "library")
     private EntityManager em;
 
-    @SuppressWarnings("unchecked")
+    //------------------------------------------------------------------ Чтение
+
     @Override
     public List<Author> getAll() {
         HibernateEntityManager hem = em.unwrap(HibernateEntityManager.class);
@@ -46,7 +45,10 @@ public class AuthorDAOImpl implements AuthorDAO {
         return (Author)criteria.uniqueResult();
     }
 
+    //--------------------------------------------------------------- Изменение
+
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Author insert(Author author) {
         em.persist(author);
         return author;

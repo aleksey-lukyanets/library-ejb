@@ -1,9 +1,9 @@
 package libraryejb.service.impl;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import libraryejb.dao.SelectionDAO;
 import libraryejb.domain.Selection;
 import libraryejb.service.SelectionService;
@@ -14,8 +14,13 @@ import libraryejb.service.SelectionService;
 @Stateless
 public class SelectionServiceImpl implements SelectionService {
 
-    @EJB
+    @Inject
     private SelectionDAO selectionDAO;
+
+    @Override
+    public Selection get() {
+        return selectionDAO.get();
+    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -27,10 +32,5 @@ public class SelectionServiceImpl implements SelectionService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void updateBook(Long bookId) {
         selectionDAO.updateBook(bookId);
-    }
-
-    @Override
-    public Selection get() {
-        return selectionDAO.get();
     }
 }

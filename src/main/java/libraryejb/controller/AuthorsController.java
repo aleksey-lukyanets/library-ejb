@@ -2,69 +2,77 @@ package libraryejb.controller;
 
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import libraryejb.domain.Author;
-import libraryejb.domain.Country;
-import libraryejb.domain.dto.AuthorDTO;
 import libraryejb.exception.AuthorNotFoundException;
 import libraryejb.exception.DuplicateException;
 import libraryejb.exception.UnknownCountryException;
 import libraryejb.exception.ValidationException;
 import libraryejb.service.AuthorService;
-import libraryejb.service.CountryService;
 
 /**
  * Контроллер авторов.
  */
-@Named("authorsController")
-@Stateless
+@Named
+@RequestScoped
 public class AuthorsController {
     
     @EJB
     private AuthorService authorService;
-    @EJB
-    private CountryService countryService;
+    
     @Inject
     private SelectionController selectionController;
+    
     @Inject
     private ErrorController errorController;
     
     private long authorCountryId = 0;
     private String newAuthorName = "";
     
-    public AuthorsController() {
-    }
-    
-    //---------------------------------------------- Методы добавления/удаления
+    //-------------------------------------------------------------------------
 
+    /**
+     * @return перечень всех авторов
+     */
     public List<Author> getAuthorsList() {
         return authorService.getAll();
     }
 
+    /**
+     * Добавление нового автора.
+     */
     public void addAuthor() {
         try {
-            Country country = countryService.getById(authorCountryId);
-            Author author = new Author(country, newAuthorName);
-            authorService.insert(new AuthorDTO(author));
-            selectionController.clearAuthorSelected();
-            errorController.clearError();
+            authorService.insert(authorCountryId, newAuthorName);
+            refreshSelectionState();
         } catch (UnknownCountryException | DuplicateException | ValidationException ex) {
             errorController.setError(ex.getMessage());
         }
     }
+
+    private void refreshSelectionState() {
+        selectionController.clearAuthorSelected();
+        errorController.clearError();
+    }
     
+    /**
+     * Удаление выбранного автора.
+     */
     public void removeAuthor() {
         long selectedAuthorId = selectionController.getSelectedAuthorId();
-        if (selectedAuthorId != 0) {
-            try {
-                authorService.remove(selectedAuthorId);
-                selectionController.clearAuthorSelected();
-                errorController.clearError();
-            } catch (AuthorNotFoundException ex) {
-                errorController.setError(ex.getMessage());
-            }
+        
+        // Если ни один автор не выбран
+        if (selectedAuthorId == 0) {
+            return;
+        }
+        // Удаление автора
+        try {
+            authorService.remove(selectedAuthorId);
+            refreshSelectionState();
+        } catch (AuthorNotFoundException ex) {
+            errorController.setError(ex.getMessage());
         }
     }
     

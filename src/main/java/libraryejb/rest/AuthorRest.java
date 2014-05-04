@@ -32,12 +32,12 @@ import libraryejb.service.AuthorService;
 import libraryejb.service.BookService;
 
 /**
- *
+ * REST веб-сервис авторов.
  */
 @Path("/authors")
 @Stateless
 @LocalBean
-public class AuthorWS {
+public class AuthorRest {
 
     @EJB
     private AuthorService authorService;
@@ -47,7 +47,12 @@ public class AuthorWS {
     
     @Context
     UriInfo rootUri;
+    
+    //------------------------------------------------------------------ Чтение
 
+    /**
+     * @return перечень всех авторов
+     */
     @GET
     @Path("/")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -63,6 +68,11 @@ public class AuthorWS {
         return dtos;
     }
 
+    /**
+     * Получение одного автора.
+     * @param id идентификатор автора
+     * @return объект автора
+     */
     @GET
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -78,6 +88,11 @@ public class AuthorWS {
         return response.build();
     }
     
+    /**
+     * Получение всех книг одного автора.
+     * @param id идентификатор автора
+     * @return книги автора
+     */
     @GET
     @Path("/{authorId}/books")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -101,7 +116,14 @@ public class AuthorWS {
         }
         return dtos;
     }
+    
+    //--------------------------------------------------------------- Изменение
 
+    /**
+     * Добавление нового автора.
+     * @param book данные о новом авторе
+     * @return добавленный автор
+     */
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -121,6 +143,11 @@ public class AuthorWS {
         return response.build();
     }
 
+    /**
+     * Удаление автора.
+     * @param id идентификатор автора
+     * @return удалённый автор
+     */
     @DELETE
     @Path("/{id}")
     public Response deleteAuthor(@PathParam("id") long id) {
