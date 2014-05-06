@@ -1,5 +1,6 @@
 package libraryejb.domain;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @Table(name = "country", schema = "public")
-public class Country implements java.io.Serializable {
+public class Country implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

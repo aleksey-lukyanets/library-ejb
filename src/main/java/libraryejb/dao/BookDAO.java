@@ -8,7 +8,6 @@ import libraryejb.domain.Book;
 /**
  * ДАО книги.
  */
-@Local
 public interface BookDAO {
 
     List<Book> getAll();

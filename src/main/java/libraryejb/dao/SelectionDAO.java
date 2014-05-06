@@ -6,7 +6,6 @@ import libraryejb.domain.Selection;
 /**
  *
  */
-@Local
 public interface SelectionDAO {
 
     Selection get();

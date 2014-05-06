@@ -7,7 +7,6 @@ import libraryejb.domain.Country;
 /**
  * ДАО страны.
  */
-@Local
 public interface CountryDAO {
 
     Country getById(long countryId);
